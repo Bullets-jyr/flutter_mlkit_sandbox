@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mlkit_sandbox/translate_util.dart';
 import 'package:google_mlkit_selfie_segmentation/google_mlkit_selfie_segmentation.dart';
 
 class SegmentationPainter extends CustomPainter {
@@ -23,6 +24,31 @@ class SegmentationPainter extends CustomPainter {
     final confidences = mask.confidences;
 
     final paint = Paint()..style = PaintingStyle.fill;
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        final int tx = translateX(
+          x.toDouble(),
+          size,
+          Size(mask.width.toDouble(), mask.height.toDouble()),
+          rotation,
+          cameraLensDirection,
+        ).round();
+        final int ty = translateY(
+          y.toDouble(),
+          size,
+          Size(mask.width.toDouble(), mask.height.toDouble()),
+          rotation,
+          cameraLensDirection,
+        ).round();
+        final opacity = confidences[(y * width) + x] * 0.5;
+        paint.color = color.withOpacity(opacity);
+        canvas.drawCircle(
+          Offset(tx.toDouble(), ty.toDouble()),
+          2,
+          paint,
+        );
+      }
+    }
   }
 
   @override
