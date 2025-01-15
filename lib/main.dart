@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mlkit_sandbox/camera_view_page.dart';
+import 'package:flutter_mlkit_sandbox/face_detector_painter.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:google_mlkit_face_mesh_detection/google_mlkit_face_mesh_detection.dart';
 import 'package:google_mlkit_selfie_segmentation/google_mlkit_selfie_segmentation.dart';
@@ -38,9 +41,20 @@ class _FaceDetectorAppState extends State<FaceDetectorApp> {
   File? image;
   ImagePicker imagePicker = ImagePicker();
   String? resultText;
+  CustomPaint? customPaint;
+
+  final FaceDetector _faceDetector = FaceDetector(
+    options: FaceDetectorOptions(
+      enableLandmarks: true,
+      enableTracking: true,
+      enableClassification: true,
+      enableContours: true,
+    ),
+  );
 
   @override
   void dispose() {
+    _faceDetector.close();
     super.dispose();
   }
 
@@ -60,50 +74,99 @@ class _FaceDetectorAppState extends State<FaceDetectorApp> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          image != null
-              ? SizedBox(
-                  height: 400,
-                  width: 400,
-                  child: Image.file(image!),
-                )
-              : Center(
-                  child: Container(
-                    height: 200,
-                    width: 200,
-                    margin: EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '얼굴 사진을 불러와주세요.',
-                      ),
-                    ),
-                  ),
-                ),
-          ElevatedButton(
-            onPressed: () {},
-            child: Text(
-              '갤러리 이미지 가져오기',
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Text(
-                resultText ?? '',
-              ),
-            ),
-          ),
-        ],
+      body: CameraView(
+        customPaint: customPaint,
+        onImage: _processImage,
       ),
+      // body: Column(
+      //   children: [
+      //     image != null
+      //         ? SizedBox(
+      //             height: 400,
+      //             width: 400,
+      //             child: Image.file(image!),
+      //           )
+      //         : Center(
+      //             child: Container(
+      //               height: 200,
+      //               width: 200,
+      //               margin: EdgeInsets.all(32),
+      //               decoration: BoxDecoration(
+      //                 border: Border.all(),
+      //               ),
+      //               child: Center(
+      //                 child: Text(
+      //                   '얼굴 사진을 불러와주세요.',
+      //                 ),
+      //               ),
+      //             ),
+      //           ),
+      //     ElevatedButton(
+      //       onPressed: () => _getImage(ImageSource.gallery),
+      //       child: Text(
+      //         '갤러리 이미지 가져오기',
+      //       ),
+      //     ),
+      //     Expanded(
+      //       child: SingleChildScrollView(
+      //         child: Text(
+      //           resultText ?? '',
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
   }
 
-  Future _getImage(ImageSource source) async {}
+  Future _getImage(ImageSource source) async {
+    setState(() {
+      image = null;
+    });
+    final pickedFile = await imagePicker.pickImage(source: source);
+    if (pickedFile != null) {
+      _processFile(pickedFile.path);
+    }
+  }
 
-  Future _processFile(String path) async {}
+  Future _processFile(String path) async {
+    setState(() {
+      image = File(path);
+    });
+    final inputImage = InputImage.fromFilePath(path);
+    _processImage(inputImage);
+  }
 
-  Future<void> _processImage(InputImage inputImage) async {}
+  Future<void> _processImage(InputImage inputImage) async {
+    setState(() {
+      resultText = '';
+    });
+
+    final faces = await _faceDetector.processImage(inputImage);
+
+    if (inputImage.metadata?.size != null &&
+        inputImage.metadata?.rotation != null) {
+      final painter = FaceDetectorPainter(
+        faces,
+        inputImage.metadata!.size,
+        inputImage.metadata!.rotation,
+        CameraLensDirection.back,
+      );
+      setState(() {
+        customPaint = CustomPaint(
+          painter: painter,
+        );
+      });
+    } else {
+      String text = 'Faces founded: ${faces.length}\n\n';
+      for (final face in faces) {
+        text += 'face: ${face.boundingBox}\n';
+        text +=
+            '${face.smilingProbability} | ${face.leftEyeOpenProbability} | ${face.rightEyeOpenProbability}\n';
+      }
+      setState(() {
+        resultText = text;
+      });
+    }
+  }
 }
