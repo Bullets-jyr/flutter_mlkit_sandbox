@@ -87,48 +87,48 @@ class _FaceDetectorAppState extends State<FaceDetectorApp> {
           ),
         ],
       ),
-      // body: CameraView(
-      //   customPaint: customPaint,
-      //   onImage: _processImage,
-      // ),
-      body: Column(
-        children: [
-          image != null
-              ? SizedBox(
-                  height: 400,
-                  width: 400,
-                  child: Image.file(image!),
-                )
-              : Center(
-                  child: Container(
-                    height: 200,
-                    width: 200,
-                    margin: EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '얼굴 사진을 불러와주세요.',
-                      ),
-                    ),
-                  ),
-                ),
-          ElevatedButton(
-            onPressed: () => _getImage(ImageSource.gallery),
-            child: Text(
-              '갤러리 이미지 가져오기',
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Text(
-                resultText ?? '',
-              ),
-            ),
-          ),
-        ],
+      body: CameraView(
+        customPaint: customPaint,
+        onImage: _processImage,
       ),
+      // body: Column(
+      //   children: [
+      //     image != null
+      //         ? SizedBox(
+      //             height: 400,
+      //             width: 400,
+      //             child: Image.file(image!),
+      //           )
+      //         : Center(
+      //             child: Container(
+      //               height: 200,
+      //               width: 200,
+      //               margin: EdgeInsets.all(32),
+      //               decoration: BoxDecoration(
+      //                 border: Border.all(),
+      //               ),
+      //               child: Center(
+      //                 child: Text(
+      //                   '얼굴 사진을 불러와주세요.',
+      //                 ),
+      //               ),
+      //             ),
+      //           ),
+      //     ElevatedButton(
+      //       onPressed: () => _getImage(ImageSource.gallery),
+      //       child: Text(
+      //         '갤러리 이미지 가져오기',
+      //       ),
+      //     ),
+      //     Expanded(
+      //       child: SingleChildScrollView(
+      //         child: Text(
+      //           resultText ?? '',
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
   }
 
@@ -155,33 +155,33 @@ class _FaceDetectorAppState extends State<FaceDetectorApp> {
       resultText = '';
     });
 
-    // final faces = await _faceDetector.processImage(inputImage);
+    final faces = await _faceDetector.processImage(inputImage);
     // final mask = await segmenter.processImage(inputImage);
-    final meshes = await meshDetector.processImage(inputImage);
+    // final meshes = await meshDetector.processImage(inputImage);
 
     if (inputImage.metadata?.size != null &&
         inputImage.metadata?.rotation != null) {
     // if (inputImage.metadata?.size != null &&
     //     inputImage.metadata?.rotation != null &&
     //     mask != null) {
-      // final painter = FaceDetectorPainter(
-      //   faces,
-      //   inputImage.metadata!.size,
-      //   inputImage.metadata!.rotation,
-      //   CameraLensDirection.back,
-      // );
+      final painter = FaceDetectorPainter(
+        faces,
+        inputImage.metadata!.size,
+        inputImage.metadata!.rotation,
+        CameraLensDirection.back,
+      );
       // final painter = SegmentationPainter(
       //   mask,
       //   inputImage.metadata!.size,
       //   inputImage.metadata!.rotation,
       //   CameraLensDirection.back,
       // );
-      final painter = FaceMeshDetectorPainter(
-        meshes,
-        inputImage.metadata!.size,
-        inputImage.metadata!.rotation,
-        CameraLensDirection.back,
-      );
+      // final painter = FaceMeshDetectorPainter(
+      //   meshes,
+      //   inputImage.metadata!.size,
+      //   inputImage.metadata!.rotation,
+      //   CameraLensDirection.back,
+      // );
       setState(() {
         customPaint = CustomPaint(
           painter: painter,
