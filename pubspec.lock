@@ -89,6 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.4+2"
+  cupertino_icons:
+    dependency: "direct main"
+    description:
+      name: cupertino_icons
+      sha256: ba631d1c7f7bef6b729a622b7b752645a2d076dba9976925b8f25725a30e1ee6
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.8"
   fake_async:
     dependency: transitive
     description:
@@ -173,6 +181,30 @@ packages:
     description:
       name: google_mlkit_commons
       sha256: "7e9a6d6e66b44aa8cfe944bda9bc3346c52486dd890ca49e5bc98845cda40d7f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.9.0"
+  google_mlkit_face_detection:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_face_detection
+      sha256: "65988405c884fd84a4ccc8bded7b5e3e4c33362f6f4eaaa94818bdaaba7bab7d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.12.0"
+  google_mlkit_face_mesh_detection:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_face_mesh_detection
+      sha256: aa2659c03f46cf69510a998e0bd14f23b9d3c7b0c9b1fe1050656ad80d6e24bd
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
+  google_mlkit_selfie_segmentation:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_selfie_segmentation
+      sha256: f2ff57b9d5ea0029a31ec14d038ff64d35c19b15de3b01bd517513f8c23cb779
       url: "https://pub.dev"
     source: hosted
     version: "0.9.0"
